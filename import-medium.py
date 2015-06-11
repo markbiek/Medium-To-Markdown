@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import sys
+import os
 import json
 import urllib
 from HTMLParser import HTMLParser
@@ -24,9 +25,7 @@ class MediumHtmlParser(HTMLParser):
                 data = data.replace("var GLOBALS = ", "")
                 data = data.replace("// ]]>", "")
 
-                print(data)
-
-"""
+                self.raw_json = os.linesep.join([s for s in data.splitlines() if s])
 
 def cleanText(text):
     patterns = ['s','m','d','ve','ll','t','re']
@@ -35,21 +34,6 @@ def cleanText(text):
 
     return text
 
-raw_json = ''.join(open('medium-post.json', 'r').readlines())
-json = json.loads(raw_json)
-
-content = json['embedded']['value']['content']
-paragraphs = content['bodyModel']['paragraphs']
-
-for p in paragraphs:
-    if p['text'] != "":
-        text = cleanText(p['text'])
-
-        if p['type'] == 3:
-            text = "### " + text
-
-        print(text + "\n")
-"""
 
 def usage():
     print("Usage: import-medium.py <url>")
@@ -64,3 +48,17 @@ if __name__ == "__main__":
 
     parser = MediumHtmlParser()
     parser.feed(f.read())
+
+    json = json.loads(parser.raw_json)
+
+    content = json['embedded']['value']['content']
+    paragraphs = content['bodyModel']['paragraphs']
+
+    for p in paragraphs:
+        if p['text'] != "":
+            text = cleanText(p['text'])
+
+            if p['type'] == 3:
+                text = "### " + text
+
+            print(text + "\n")

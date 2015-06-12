@@ -61,4 +61,4 @@ if __name__ == "__main__":
             if p['type'] == 3:
                 text = "### " + text
 
-            print(text + "\n")
+            print(text.encode("ascii", "ignore") + "\n")

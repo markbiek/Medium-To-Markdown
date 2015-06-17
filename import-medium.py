@@ -58,6 +58,11 @@ if __name__ == "__main__":
         if p['text'] != "":
             text = cleanText(p['text'])
 
+            """ Quote """
+            if p['type'] == 6:
+                text = "> " + text
+
+            """ Subhead """
             if p['type'] == 3:
                 text = "### " + text
 

@@ -38,6 +38,14 @@ def cleanText(text):
 def usage():
     print("Usage: import-medium.py <url>")
 
+def insertLink(text, markup):
+    text = text.encode("ascii", "ignore")
+
+    start = markup['start']
+    end = markup['end']
+    
+    return "{0}[{1}]({2}){3}".format(text[:start], text[start:end], markup['href'], text[end:])
+
 if __name__ == "__main__":
     if len(sys.argv) <= 1:
         usage()
@@ -65,5 +73,12 @@ if __name__ == "__main__":
             """ Subhead """
             if p['type'] == 3:
                 text = "### " + text
+
+            """ Text has markups """
+            if len(p['markups']) > 0:
+                for m in p['markups']:
+                    """ Link markup """
+                    if 'href' in m.keys():
+                        text = insertLink(text, m)
 
             print(text.encode("ascii", "ignore") + "\n")

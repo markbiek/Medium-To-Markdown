@@ -4,6 +4,8 @@ import sys
 import os
 import json
 import urllib
+import datetime
+import re
 from HTMLParser import HTMLParser
 
 class MediumHtmlParser(HTMLParser):
@@ -77,7 +79,26 @@ if __name__ == "__main__":
 
     json = json.loads(parser.raw_json)
 
-    ut_firstPublished = json['embedded']['value']['firstPublishedAt']
+    """Other fields we need to grab for pelican"""
+    ut_first_published = int(str(json['embedded']['value']['firstPublishedAt'])[0:-3])
+    first_published = datetime.datetime.fromtimestamp(ut_first_published).strftime('%Y-%m-%d %H:%M')
+    post_title = json['embedded']['value']['title']
+    slug = json['embedded']['value']['slug']
+    outfile_name = first_published + "-" + slug + ".md"
+    author = json['embedded']['value']['creator']['username']
+
+    if config['pelican']:
+        sys.stdout = open(outfile_name, 'w')
+
+        print("Title: " + post_title)
+        print("Date: " + first_published)
+        print("Author: " + author)
+        print("Category: ")
+        print("Tags: ")
+        print("Slug: " + slug)
+        print("")
+
+    """Grab the paragraph data for the post"""
     content = json['embedded']['value']['content']
     paragraphs = content['bodyModel']['paragraphs']
 

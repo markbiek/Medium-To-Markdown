@@ -36,7 +36,23 @@ def cleanText(text):
 
 
 def usage():
-    print("Usage: import-medium.py <url>")
+    print("Usage: import-medium.py [OPTIONS] <url>")
+    print("    --pelican\tOutput in a format suitable for use with the Pelican blog engine")
+
+"""
+TODO:
+    We'll redo this to use a proper arg parser when we have more than one argument
+"""
+def parseArgs():
+    config = { 'pelican': False, 'url': '' }
+
+    if sys.argv[1] == '--pelican':
+        config['pelican'] = True
+        config['url'] = sys.argv[2]
+    else:
+        config['url'] = sys.argv[1]
+
+    return config
 
 def insertLink(text, markup):
     text = text.encode("ascii", "ignore")
@@ -51,7 +67,9 @@ if __name__ == "__main__":
         usage()
         sys.exit(1)
 
-    url = sys.argv[1]
+    config = parseArgs()
+
+    url = config['url']
     f = urllib.urlopen(url)
 
     parser = MediumHtmlParser()
@@ -59,6 +77,7 @@ if __name__ == "__main__":
 
     json = json.loads(parser.raw_json)
 
+    ut_firstPublished = json['embedded']['value']['firstPublishedAt']
     content = json['embedded']['value']['content']
     paragraphs = content['bodyModel']['paragraphs']
 

@@ -90,7 +90,7 @@ if __name__ == "__main__":
     if config['pelican']:
         sys.stdout = open(outfile_name, 'w')
 
-        print("Title: " + post_title)
+        print("Title: " + post_title.encode("ascii", "ignore"))
         print("Date: " + first_published)
         print("Author: " + author)
         print("Category: ")

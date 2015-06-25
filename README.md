@@ -1,7 +1,12 @@
 ### Medium-To-Markdown
 
-import-medium.py <medium post url>
+    import-medium.py [OPTIONS] <medium post url>
+       --pelican        Print out in a format suitable for publishing with the Pelican static site generator
 
 Given a link to a post on Medium, print out a Markdown version of the post.
 
-Only very basic formatting is supported in this version
+v0.1
+
+* Basic formatting.
+* Links
+* Block quotes

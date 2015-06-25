@@ -1,5 +1,5 @@
-#v0.1
 #!/usr/bin/python
+#v0.1
 
 import sys
 import os

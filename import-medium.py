@@ -76,7 +76,7 @@ if __name__ == "__main__":
     f = urllib.urlopen(url)
 
     parser = MediumHtmlParser()
-    parser.feed(f.read())
+    parser.feed(f.read().decode('ascii', 'ignore'))
 
     json = json.loads(parser.raw_json)
 

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#v0.1
+#v0.2
 
 import sys
 import os
@@ -31,12 +31,7 @@ class MediumHtmlParser(HTMLParser):
                 self.raw_json = os.linesep.join([s for s in data.splitlines() if s])
 
 def cleanText(text):
-    patterns = ['s','m','d','ve','ll','t','re']
-    for p in patterns:
-        text = text.replace('.'+p, "'"+p)
-
-    return text
-
+    return re.sub(r'(\w+)\.(\w+)', r"\1'\2", text)
 
 def usage():
     print("Usage: import-medium.py [OPTIONS] <url>")
@@ -76,7 +71,7 @@ if __name__ == "__main__":
     f = urllib.urlopen(url)
 
     parser = MediumHtmlParser()
-    parser.feed(f.read().decode('ascii', 'ignore'))
+    parser.feed(f.read().decode('utf-8', 'ignore'))
 
     json = json.loads(parser.raw_json)
 
@@ -122,4 +117,4 @@ if __name__ == "__main__":
                     if 'href' in m.keys():
                         text = insertLink(text, m)
 
-            print(text.encode("ascii", "ignore") + "\n")
+            print(text.encode("utf-8", "ignore") + "\n")

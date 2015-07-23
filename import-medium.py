@@ -12,10 +12,21 @@ from HTMLParser import HTMLParser
 class MediumHtmlParser(HTMLParser):
     collect_data = False
     raw_json = ""
+    images = {}
+
+    def __get_img_src(self, attrs):
+        for attr in attrs:
+            if attr[0] == 'src':
+                img_url = attr[1]
+                img = img_url.split('/')[-1]
+                return (img, img_url)
 
     def handle_starttag(self, tag, attrs):
         if tag == "script":
             self.collect_data = True
+        if tag == "img":
+            img, img_url = self.__get_img_src(attrs)
+            self.images[img] = img_url
 
     def handle_endtag(self, tag):
         if tag == "script" and self.collect_data:

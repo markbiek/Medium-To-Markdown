@@ -41,7 +41,7 @@ class MediumHtmlParser(HTMLParser):
 
                 self.raw_json = os.linesep.join([s for s in data.splitlines() if s])
 
-def cleanText(text):
+def clean_text(text):
     return re.sub(r'(\w+)\.(\w+)', r"\1'\2", text)
 
 def usage():
@@ -52,7 +52,7 @@ def usage():
 TODO:
     We'll redo this to use a proper arg parser when we have more than one argument
 """
-def parseArgs():
+def parse_args():
     config = { 'pelican': False, 'url': '' }
 
     if sys.argv[1] == '--pelican':
@@ -63,7 +63,7 @@ def parseArgs():
 
     return config
 
-def insertLink(text, markup):
+def insert_link(text, markup):
     text = text.encode('ascii', 'ignore')
 
     start = markup['start']
@@ -76,7 +76,7 @@ if __name__ == '__main__':
         usage()
         sys.exit(1)
 
-    config = parseArgs()
+    config = parse_args()
 
     url = config['url']
     f = urllib.urlopen(url)
@@ -111,7 +111,7 @@ if __name__ == '__main__':
 
     for p in paragraphs:
         if p['text'] != '':
-            text = cleanText(p['text'])
+            text = clean_text(p['text'])
 
             """ Quote """
             if p['type'] == 6:
@@ -130,6 +130,6 @@ if __name__ == '__main__':
                 for m in p['markups']:
                     """ Link markup """
                     if 'href' in m.keys():
-                        text = insertLink(text, m)
+                        text = insert_link(text, m)
 
             print(text.encode('utf-8', 'ignore') + '\n')

@@ -5,6 +5,10 @@
 
 Given a link to a post on Medium, print out a Markdown version of the post.
 
+v0.3
+
+* Embedded image support
+
 v0.2
 
 * Fancy quotes are now preserved

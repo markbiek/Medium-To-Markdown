@@ -9,6 +9,18 @@ import datetime
 import re
 from HTMLParser import HTMLParser
 
+##############################################################################
+# Config
+
+PAR_TYPES = {
+        'QUOTE': 6,
+        'H2':    3,
+        'H3':    13,
+        'IMG':   4
+        }
+
+##############################################################################
+
 class MediumHtmlParser(HTMLParser):
     collect_data = False
     raw_json = ''
@@ -86,7 +98,7 @@ if __name__ == '__main__':
 
     json = json.loads(parser.raw_json)
 
-    """Other fields we need to grab for pelican"""
+    # Other fields we need to grab for pelican
     ut_first_published = int(str(json['embedded']['value']['firstPublishedAt'])[0:-3])
     first_published = datetime.datetime.fromtimestamp(ut_first_published).strftime('%Y-%m-%d %H:%M')
     post_title = json['embedded']['value']['title']
@@ -105,31 +117,39 @@ if __name__ == '__main__':
         print('Slug: ' + slug)
         print('')
 
-    """Grab the paragraph data for the post"""
+    # Grab the paragraph data for the post
     content = json['embedded']['value']['content']
     paragraphs = content['bodyModel']['paragraphs']
 
     for p in paragraphs:
-        if p['text'] != '':
-            text = clean_text(p['text'])
+        text = clean_text(p['text'])
 
-            """ Quote """
-            if p['type'] == 6:
-                text = '> ' + text
+        if p['type'] == PAR_TYPES['QUOTE']:
+            text = '> ' + text
 
-            """ Subhead """
-            if p['type'] == 3:
-                text = '### ' + text
+        if p['type'] == PAR_TYPES['H2']:
+            text = '### ' + text
 
-            """ Sub-subhead """
-            if p['type'] == 13:
-                text = '#### ' + text
+        if p['type'] == PAR_TYPES['H3']:
+            text = '#### ' + text
 
-            """ Text has markups """
-            if len(p['markups']) > 0:
-                for m in p['markups']:
-                    """ Link markup """
-                    if 'href' in m.keys():
-                        text = insert_link(text, m)
+        if p['type'] == PAR_TYPES['IMG']:
+            img = p['metadata']['id']
+            if img in parser.images.keys():
+                w = p['metadata']['originalWidth']
+                h = p['metadata']['originalHeight']
+                img_url = parser.images[img]
 
+                text = '<img src="{0}" width="{1}" height="{2}" />'.format(img_url, w, h)
+            else:
+                print("UNKNOWN IMAGE " + img)
+
+        # Text has markups 
+        if len(p['markups']) > 0:
+            for m in p['markups']:
+                # Link markup 
+                if 'href' in m.keys() and p['type'] != PAR_TYPES['IMG']:
+                    text = insert_link(text, m)
+
+        if text != '':
             print(text.encode('utf-8', 'ignore') + '\n')

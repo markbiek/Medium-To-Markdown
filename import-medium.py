@@ -11,7 +11,7 @@ from HTMLParser import HTMLParser
 
 class MediumHtmlParser(HTMLParser):
     collect_data = False
-    raw_json = ""
+    raw_json = ''
     images = {}
 
     def __get_img_src(self, attrs):
@@ -22,22 +22,22 @@ class MediumHtmlParser(HTMLParser):
                 return (img, img_url)
 
     def handle_starttag(self, tag, attrs):
-        if tag == "script":
+        if tag == 'script':
             self.collect_data = True
-        if tag == "img":
+        if tag == 'img':
             img, img_url = self.__get_img_src(attrs)
             self.images[img] = img_url
 
     def handle_endtag(self, tag):
-        if tag == "script" and self.collect_data:
+        if tag == 'script' and self.collect_data:
             self.collect_data = False
 
     def handle_data(self, data):
         if self.collect_data:
-            if "<![CDATA[" in data and "var GLOBALS" in data:
-                data = data.replace("// <![CDATA[", "")
-                data = data.replace("var GLOBALS = ", "")
-                data = data.replace("// ]]>", "")
+            if '<![CDATA[' in data and 'var GLOBALS' in data:
+                data = data.replace('// <![CDATA[', '')
+                data = data.replace('var GLOBALS = ', '')
+                data = data.replace('// ]]>', '')
 
                 self.raw_json = os.linesep.join([s for s in data.splitlines() if s])
 
@@ -45,8 +45,8 @@ def cleanText(text):
     return re.sub(r'(\w+)\.(\w+)', r"\1'\2", text)
 
 def usage():
-    print("Usage: import-medium.py [OPTIONS] <url>")
-    print("    --pelican\tOutput in a format suitable for use with the Pelican blog engine")
+    print('Usage: import-medium.py [OPTIONS] <url>')
+    print('    --pelican\tOutput in a format suitable for use with the Pelican blog engine')
 
 """
 TODO:
@@ -64,14 +64,14 @@ def parseArgs():
     return config
 
 def insertLink(text, markup):
-    text = text.encode("ascii", "ignore")
+    text = text.encode('ascii', 'ignore')
 
     start = markup['start']
     end = markup['end']
     
-    return "{0}[{1}]({2}){3}".format(text[:start], text[start:end], markup['href'], text[end:])
+    return '{0}[{1}]({2}){3}'.format(text[:start], text[start:end], markup['href'], text[end:])
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     if len(sys.argv) <= 1:
         usage()
         sys.exit(1)
@@ -91,35 +91,39 @@ if __name__ == "__main__":
     first_published = datetime.datetime.fromtimestamp(ut_first_published).strftime('%Y-%m-%d %H:%M')
     post_title = json['embedded']['value']['title']
     slug = json['embedded']['value']['slug']
-    outfile_name = first_published + "-" + slug + ".md"
+    outfile_name = first_published + '-' + slug + '.md'
     author = json['embedded']['value']['creator']['username']
 
     if config['pelican']:
         sys.stdout = open(outfile_name, 'w')
 
-        print("Title: " + post_title.encode("ascii", "ignore"))
-        print("Date: " + first_published)
-        print("Author: " + author)
-        print("Category: ")
-        print("Tags: ")
-        print("Slug: " + slug)
-        print("")
+        print('Title: ' + post_title.encode('ascii', 'ignore'))
+        print('Date: ' + first_published)
+        print('Author: ' + author)
+        print('Category: ')
+        print('Tags: ')
+        print('Slug: ' + slug)
+        print('')
 
     """Grab the paragraph data for the post"""
     content = json['embedded']['value']['content']
     paragraphs = content['bodyModel']['paragraphs']
 
     for p in paragraphs:
-        if p['text'] != "":
+        if p['text'] != '':
             text = cleanText(p['text'])
 
             """ Quote """
             if p['type'] == 6:
-                text = "> " + text
+                text = '> ' + text
 
             """ Subhead """
             if p['type'] == 3:
-                text = "### " + text
+                text = '### ' + text
+
+            """ Sub-subhead """
+            if p['type'] == 13:
+                text = '#### ' + text
 
             """ Text has markups """
             if len(p['markups']) > 0:
@@ -128,4 +132,4 @@ if __name__ == "__main__":
                     if 'href' in m.keys():
                         text = insertLink(text, m)
 
-            print(text.encode("utf-8", "ignore") + "\n")
+            print(text.encode('utf-8', 'ignore') + '\n')

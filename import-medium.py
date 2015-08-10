@@ -128,7 +128,12 @@ if __name__ == '__main__':
             text = '> ' + text
 
         if p['type'] == PAR_TYPES['H2']:
-            text = '### ' + text
+            # If we're in pelican mode, the first H2 is a duplicate 
+            # of the title so we just skip that line entirely
+            if config['pelican'] and text == post_title:
+                text = ''
+            else:
+                text = '### ' + text
 
         if p['type'] == PAR_TYPES['H3']:
             text = '#### ' + text

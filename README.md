@@ -5,6 +5,11 @@
 
 Given a link to a post on Medium, print out a Markdown version of the post.
 
+v0.4
+
+* Fixed bug where script failed on some encoded ascii chars (\x<ascii hex>)
+
+
 v0.3
 
 * Embedded image support

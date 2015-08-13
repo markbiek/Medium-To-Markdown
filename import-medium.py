@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#v0.3
+#v0.4
 
 import sys
 import os
@@ -51,7 +51,16 @@ class MediumHtmlParser(HTMLParser):
                 data = data.replace('var GLOBALS = ', '')
                 data = data.replace('// ]]>', '')
 
-                self.raw_json = os.linesep.join([s for s in data.splitlines() if s])
+                self.raw_json = clean_json(os.linesep.join([s for s in data.splitlines() if s]))
+
+def clean_json(raw_json):
+    # Medium encodes some chars as \x<ascii hex> which is invalid json
+    # We turn those encodings back into plain ascii chars
+    m = re.findall(ur'\\x[aA-zZ0-9]{2}', raw_json, re.UNICODE)
+    for x in m:
+        raw_json = raw_json.replace(x, chr(int('0x' + x[2:], 16)))
+
+    return raw_json
 
 def clean_text(text):
     return re.sub(r'(\w+)\.(\w+)', r"\1'\2", text)

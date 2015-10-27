@@ -114,12 +114,12 @@ if __name__ == '__main__':
     json = json.loads(parser.raw_json)
 
     # Other fields we need to grab for pelican
-    ut_first_published = int(str(json['embedded']['value']['firstPublishedAt'])[0:-3])
+    ut_first_published = int(str(json['value']['firstPublishedAt'])[0:-3])
     first_published = datetime.datetime.fromtimestamp(ut_first_published).strftime('%Y-%m-%d %H:%M')
-    post_title = json['embedded']['value']['title']
-    slug = json['embedded']['value']['slug']
+    post_title = json['value']['title']
+    slug = json['value']['slug']
     outfile_name = first_published + '-' + slug + '.md'
-    author = json['embedded']['value']['creator']['username']
+    author = json['value']['creator']['username']
 
     if config['pelican']:
         sys.stdout = open(outfile_name, 'w')
@@ -133,7 +133,7 @@ if __name__ == '__main__':
         print('')
 
     # Grab the paragraph data for the post
-    content = json['embedded']['value']['content']
+    content = json['value']['content']
     paragraphs = content['bodyModel']['paragraphs']
 
     for p in paragraphs:

@@ -46,12 +46,13 @@ class MediumHtmlParser(HTMLParser):
 
     def handle_data(self, data):
         if self.collect_data:
-            if '<![CDATA[' in data and 'var GLOBALS' in data:
+            if '<![CDATA[' in data and 'window["obvInit"]' in data:
                 data = data.replace('// <![CDATA[', '')
-                data = data.replace('var GLOBALS = ', '')
+                data = data.replace('window["obvInit"]', '')
                 data = data.replace('// ]]>', '')
 
                 self.raw_json = clean_json(os.linesep.join([s for s in data.splitlines() if s]))
+                self.raw_json = self.raw_json[1:-1]
 
 def clean_json(raw_json):
     # Medium encodes some chars as \x<ascii hex> which is invalid json
@@ -104,9 +105,11 @@ if __name__ == '__main__':
     opener.addheaders = [('User-agent', 'Mozilla/5.0')]
     f = opener.open(url)
 
+    encoding = f.headers.getparam('charset')
     parser = MediumHtmlParser()
     html = f.read()
-    parser.feed(html.decode('utf-8', 'ignore'))
+
+    parser.feed(html.decode(encoding))
 
     json = json.loads(parser.raw_json)
 

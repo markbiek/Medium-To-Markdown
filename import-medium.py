@@ -4,7 +4,7 @@
 import sys
 import os
 import json
-import urllib
+import urllib2
 import datetime
 import re
 from HTMLParser import HTMLParser
@@ -100,10 +100,13 @@ if __name__ == '__main__':
     config = parse_args()
 
     url = config['url']
-    f = urllib.urlopen(url)
+    opener = urllib2.build_opener()
+    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+    f = opener.open(url)
 
     parser = MediumHtmlParser()
-    parser.feed(f.read().decode('utf-8', 'ignore'))
+    html = f.read()
+    parser.feed(html.decode('utf-8', 'ignore'))
 
     json = json.loads(parser.raw_json)
 
